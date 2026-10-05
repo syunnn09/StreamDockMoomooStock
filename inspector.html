@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Stock Settings</title>
+</head>
+<body>
+    <div class="sdpi-wrapper">
+        <div class="sdpi-item">
+            <div class="sdpi-item-label" style="color: white;">銘柄コード</div>
+            <input class="sdpi-item-value" id="symbol_input" type="text" placeholder="例: 7203 または AAPL">
+            <select id="col"></select>
+        </div>
+    </div>
+
+    <script>
+        var websocket = null;
+        var uuid = null;
+        var actionInfo = {};
+        var info = {'symbol': 'US.SPCX', 'col': 'last_price'};
+
+        const col_list = [
+            'code', 'name', 'data_date', 'data_time', 'last_price', 'open_price',
+            'high_price', 'low_price', 'prev_close_price', 'volume',
+            'turnover', 'turnover_rate', 'amplitude', 'suspension',
+            'listing_date', 'price_spread', 'dark_status', 'sec_status', 'strike_price',
+            'contract_size', 'open_interest', 'implied_volatility',
+            'premium', 'delta', 'gamma', 'vega', 'theta', 'rho',
+            'net_open_interest', 'expiry_date_distance', 'contract_nominal_value',
+            'owner_lot_multiplier', 'option_area_type', 'contract_multiplier',
+            'last_settle_price', 'position', 'position_change', 'index_option_type'
+        ];
+
+        const colEl = document.getElementById('col');
+        for (const col of col_list) {
+            const option = document.createElement('option');
+            option.value = col;
+            option.text = col;
+            colEl.add(option);
+        }
+
+        colEl.addEventListener('change', function() {
+            var colValue = this.value;
+            info['col'] = this.value;
+            var updatedSettings = {
+                event: "setSettings",
+                context: uuid,
+                payload: info
+            };
+            websocket.send(JSON.stringify(updatedSettings));
+        });
+
+        // Stream Deckアプリ起動時に呼ばれる関数
+        function connectElgatoStreamDeckSocket(inPort, inUUID, inRegisterEvent, inInfo, inActionInfo) {
+            uuid = inUUID;
+            actionInfo = JSON.parse(inActionInfo);
+
+            websocket = new WebSocket("ws://127.0.0.1:" + inPort);
+
+            websocket.onopen = function() {
+                var json = {
+                    event: inRegisterEvent,
+                    uuid: inUUID
+                };
+                websocket.send(JSON.stringify(json));
+
+                // 既存の保存済み設定があれば入力欄に反映
+                if (actionInfo.payload.settings && actionInfo.payload.settings.symbol) {
+                    info['symbol'] = actionInfo.payload.settings.symbol;
+                    document.getElementById('symbol_input').value = actionInfo.payload.settings.symbol;
+                }
+                if (actionInfo.payload.settings && actionInfo.payload.settings.col) {
+                    info['col'] = actionInfo.payload.settings.col;
+                    colEl.value = actionInfo.payload.settings.col;
+                }
+            };
+
+            document.getElementById('symbol_input').addEventListener('change', function() {
+                info['symbol'] = this.value;
+                var updatedSettings = {
+                    event: "setSettings",
+                    context: uuid,
+                    payload: info
+                };
+                websocket.send(JSON.stringify(updatedSettings));
+            });
+        }
+    </script>
+</body>
+</html>

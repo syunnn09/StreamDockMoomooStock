@@ -1,0 +1,44 @@
+{
+  "Actions": [
+    {
+      "Name": "moomoo_stock",
+      "UUID": "com.syunnn09.moomoo_stock.get",
+      "Icon": "moomoo.png",
+      "PropertyInspectorPath": "inspector.html",
+      "States": [
+        {
+          "Image": "black.png",
+          "TitleColor": "white",
+          "TitleAlignment": "bottom",
+          "FontSize": 15
+        }
+      ],
+      "UserTitleEnabled": false,
+      "Controllers": [
+        "Keypad",
+        "SecondaryScreen",
+        "Knob",
+        "btn"
+      ]
+    }
+  ],
+  "SDKVersion": 1,
+  "Author": "syunnn09",
+  "Name": "moomoo_stock",
+  "Icon": "icon.png",
+  "CategoryIcon": "moomoo.png",
+  "CodePath": "main.exe",
+  "Description": "moomoo_stock",
+  "Category": "moomoo_stock",
+  "Version": "1.0",
+  "URL": "http://localhost:8080",
+  "OS": [
+    {
+      "Platform": "windows",
+      "MinimumVersion": "10"
+    }
+  ],
+  "Software": {
+    "MinimumVersion": "2.9"
+  }
+}
